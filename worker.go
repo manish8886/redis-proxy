@@ -7,11 +7,11 @@ import (
 )
 
 type Http_Req struct {
-	W   *http.ResponseWriter
+	W   http.ResponseWriter
 	Req *http.Request
 }
 
-func Http_worker(work chan *Http_Req, i int) {
+func Http_worker(work <-chan Http_Req, i int) {
 	for {
 		work_item, ok := <-work
 		if !ok {
@@ -31,13 +31,14 @@ func Http_worker(work chan *Http_Req, i int) {
 		if bfailed == true {
 			if debug {
 				fmt.Println(" error for key:%s", key)
-				io.WriteString(*work_item.W, "error")
+				io.WriteString(work_item.W, "error")
 			}
 		} else {
 			if debug {
 				fmt.Println("%s:%s", key, value)
-				fmt.Fprintf(*work_item.W, "%s is love of %s", key, value)
-				io.WriteString(*work_item.W, value)
+				//				fmt.Fprintf(work_item.W, "%s is love of %s", key, value)
+				print_header(work_item.W)
+				//io.WriteString(*work_item.W, value)
 			}
 		}
 	}
