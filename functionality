@@ -1,0 +1,13 @@
+cache functionality:
+ Adding to cache:
+    Addding to cache can only happen when a client asks for a key which is not present in cache.
+    When this happens query is done to backend store and that is saved as a most recently used entry.
+
+Reading:
+    When a key is already present in a cache no modification to cache happens.
+
+Deletion:
+    1: If a preconfigured timer is expired.
+    2. If capacity of cache is reached.
+
+Access to redis handles is syncronised that is a bootleneck.  
