@@ -22,7 +22,7 @@ type read_cache struct {
 	secs        uint16
 }
 
-var debug bool = true
+var debug bool = false
 var cache read_cache
 
 func delete_item_from_cache() {
@@ -66,8 +66,10 @@ func request_key_from_redis(key string) (item node, bfailed bool) {
 		return
 	}
 
-	if value == nil && debug {
-		fmt.Println("no key at backend")
+	if value == nil {
+		if debug {
+			fmt.Println("no key at backend")
+		}
 		bfailed = true
 		return
 	}
@@ -116,13 +118,13 @@ func Handle_get_request(key string) (str string, bFailed bool) {
 	return
 }
 
-func Init_cache(cli redis.Client) {
+func Init_cache(cli redis.Client, max_keys int, expirtytime uint16) {
 	cache.backend = cli
 	cache.capacity = 128
 	cache.key_storage = make(map[string]*list.Element)
 	cache.list = list.New()
-	cache.secs = 1
+	cache.secs = expirtytime
 	cache.timer = time.NewTicker(time.Second * time.Duration(cache.secs))
-	//go start_timer()
+	go start_timer()
 	return
 }

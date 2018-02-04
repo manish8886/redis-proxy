@@ -10,12 +10,6 @@ import (
 	"runtime"
 )
 
-//var channels []chan *cache.Http_Req
-var buff_chan chan cache.Http_Req
-
-//var cases []reflect.SelectCase
-//var incoming_req cache.Http_Req
-
 func main() {
 
 	// Parse command-line flags; needed to let flags used by Go-Redis be parsed.
@@ -68,47 +62,7 @@ func main() {
 	}
 
 	fmt.Println("max procs:%d", runtime.GOMAXPROCS(-1))
-	setup_worker_buff()
-	http.HandleFunc("/", handler_buff)
+	//	setup_worker_buff()
+	http.HandleFunc("/", cache.Http_worker)
 	http.ListenAndServe(":8080", nil)
-}
-
-/*
-func shut_down_worker() {
-	for i := 0; i < len(channels); i++ {
-		close(channels[i])
-	}
-}*/
-func setup_worker_buff() {
-	/*select case,array of channel and workser*/
-	n := runtime.GOMAXPROCS(-1)
-	buff_chan = make(chan cache.Http_Req, n)
-	for i := 0; i < n; i++ {
-		go cache.Http_worker(buff_chan, i)
-	}
-}
-
-/*
-func setup_worker() {
-	n := runtime.GOMAXPROCS(-1)
-	channels = make([]chan *cache.Http_Req, n)
-	cases = make([]reflect.SelectCase, n)
-	for i := 0; i < n; i++ {
-		channels[i] = make(chan *cache.Http_Req)
-		cases[i] = reflect.SelectCase{Dir: reflect.SelectSend, Chan: reflect.ValueOf(channels[i]), Send: reflect.ValueOf(&incoming_req)}
-		go cache.Http_worker(channels[i], i)
-	}
-}*/
-
-/*
-func handler(w http.ResponseWriter, r *http.Request) {
-	incoming_req = cache.Http_Req{W: &w, Req: r}
-	fmt.Fprintf(*incoming_req.W, "Hi there, I love %s!", r.URL.Path[1:])
-	ch, _, _ := reflect.Select(cases)
-	fmt.Printf("channel :%d is chooses", ch)
-}*/
-func handler_buff(w http.ResponseWriter, r *http.Request) {
-	incoming_req := cache.Http_Req{W: w, Req: r}
-	//	fmt.Fprintf(incoming_req.W, "Hi there, I love %s!", r.URL.Path[1:])
-	buff_chan <- incoming_req
 }
