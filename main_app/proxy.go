@@ -109,7 +109,7 @@ func main() {
 	// Using the default ConnectionSpec, we are specifying the client to connect
 	// to db 13 (e.g. SELECT 13), and a password of go-redis (e.g. AUTH go-redis)
 
-	spec := redis.DefaultSpec().Db(13).Password("")
+	spec := redis.DefaultSpec().Host("redis").Db(13).Password("")
 	client, e := redis.NewSynchClientWithSpec(spec)
 	if e != nil {
 		log.Println("failed to create the client", e)
